@@ -25,6 +25,7 @@ linux-bin:
 common:
 	-ln -s $(COMMON)/env.go . 2> /dev/null || true
 	-ln -s $(COMMON)/helpers.go . 2> /dev/null || true
+	-ln -s $(COMMON)/http.go . 2> /dev/null || true
 	-ln -s $(COMMON)/main-cmdline.go . 2> /dev/null || true
 	-ln -s $(COMMON)/s3.go . 2> /dev/null || true
 	-ln -s $(COMMON)/version.go . 2> /dev/null || true

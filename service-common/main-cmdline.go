@@ -18,8 +18,8 @@ func main() {
 
 	// process the commandline options
 	opts := ServiceOptions{}
-	flag.StringVar(&opts.StartDate, "startdate", "", "The object set start date")
-	flag.StringVar(&opts.EndDate, "enddate", "", "The object set end date")
+	flag.StringVar(&opts.StartDate, "startdate", "", "The object set start date, YYYY-MM-DD")
+	flag.StringVar(&opts.EndDate, "enddate", "", "The object set end date, YYYY-MM-DD")
 	flag.StringVar(&opts.SingleId, "singleid", "", "Submit a single object")
 	flag.BoolVar(&opts.NoSubmit, "nosubmit", false, "Generate but dont actually submit")
 
@@ -36,7 +36,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	if len(opts.SingleId) == 0 && (len(opts.StartDate) == 0 || len(opts.EndDate) == 0) {
+	if len(opts.SingleId) == 0 && (len(opts.StartDate) != 10 || len(opts.EndDate) != 10) {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}

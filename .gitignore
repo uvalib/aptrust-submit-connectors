@@ -4,8 +4,11 @@
 */tmp/
 
 # ignore common/shared files
+apt-api.go
+apt-submit.go
 env.go
 helpers.go
+http.go
 main-cmdline.go
 s3.go
 version.go
