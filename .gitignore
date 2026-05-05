@@ -1,0 +1,14 @@
+.idea
+/tmp
+*/bin/
+*/tmp/
+
+# ignore common/shared files
+env.go
+helpers.go
+main-cmdline.go
+s3.go
+version.go
+
+# dont ignore common directory
+!service-common/*.go
