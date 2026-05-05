@@ -10,7 +10,7 @@ type ServiceOptions struct {
 	StartDate string
 	EndDate   string
 	SingleId  string
-	Dryrun    bool
+	NoSubmit  bool
 }
 
 // main entry point
@@ -21,7 +21,7 @@ func main() {
 	flag.StringVar(&opts.StartDate, "startdate", "", "The object set start date")
 	flag.StringVar(&opts.EndDate, "enddate", "", "The object set end date")
 	flag.StringVar(&opts.SingleId, "singleid", "", "Submit a single object")
-	flag.BoolVar(&opts.Dryrun, "dryrun", false, "Show but dont do")
+	flag.BoolVar(&opts.NoSubmit, "nosubmit", false, "Generate but dont actually submit")
 
 	flag.Parse()
 
@@ -53,16 +53,12 @@ func main() {
 	if len(opts.SingleId) != 0 {
 		idList = append(idList, opts.SingleId)
 	} else {
-		var ids []string
-		ids, err = getIdList(cfg, &opts)
-		if err == nil {
-			idList = append(idList, ids...)
-		}
+		idList, err = getUpdatedIds(cfg, &opts)
 	}
 
 	// process the set of id's
 	if len(idList) != 0 {
-		err = processIdList(cfg, &opts, idList)
+		err = processUpdatedIds(cfg, &opts, idList)
 	}
 
 	if err == nil {
