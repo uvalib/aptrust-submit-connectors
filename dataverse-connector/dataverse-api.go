@@ -4,6 +4,8 @@
 
 package main
 
+import "encoding/json"
+
 type UpdatedResponse struct {
 	Status string      `json:"status"`
 	Data   UpdatedData `json:"data"`
@@ -33,9 +35,10 @@ type ItemData struct {
 }
 
 type ItemVersion struct {
-	VersionMajor int         `json:"versionNumber"`
-	VersionMinor int         `json:"versionMinorNumber"`
-	Files        []ItemFiles `json:"files"`
+	VersionMajor int          `json:"versionNumber"`
+	VersionMinor int          `json:"versionMinorNumber"`
+	Metadata     ItemMetadata `json:"metadataBlocks"`
+	Files        []ItemFiles  `json:"files"`
 }
 
 type ItemFiles struct {
@@ -43,11 +46,31 @@ type ItemFiles struct {
 }
 
 type ItemDataFile struct {
-	Id       int64  `json:"id"`
+	Id       int    `json:"id"`
 	Filename string `json:"filename"`
 	Filesize int64  `json:"filesize"`
 	MD5      string `json:"md5"`
 }
+
+type ItemMetadata struct {
+	Citation ItemCitationBlock `json:"citation"`
+}
+
+type ItemCitationBlock struct {
+	Fields []ItemCitationField `json:"fields"`
+}
+
+type ItemCitationField struct {
+	Name  string          `json:"typeName"`
+	Value json.RawMessage `json:"value"`
+}
+
+type ItemCitationCompoundDescriptionField struct {
+	DV ItemCitationField `json:"dsDescriptionValue"`
+}
+
+var titleMetadataFieldName = "title"
+var descriptionMetadataFieldName = "dsDescription"
 
 //
 // end of file

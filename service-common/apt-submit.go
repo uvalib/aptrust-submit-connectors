@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"path/filepath"
 	"time"
 
@@ -25,27 +24,16 @@ func (l *Logger) Logf(format string, v ...any) {
 	//log.Printf("INFO: "+format, v...)
 }
 
-func submitContent(baseUrl string, cmd string, environment string, poll bool, cid string, localDir string) error {
-
-	// create our HTTP client
-	httpClient := newHttpClient(1, 10)
-	// important, cleanup properly
-	defer httpClient.CloseIdleConnections()
-
-	// get the list of bags to submit
-	bagList := makeBagList(cmd, localDir)
+func submitBagContents(cfg *ServiceConfig, httpClient *http.Client, localDir string, bagName string) error {
 
 	// do the submission registration
-	regResponse, err := register(baseUrl, environment, cid, httpClient)
+	regResponse, err := register(cfg, httpClient)
 	if err != nil {
 		return err
 	}
 
 	// create appropriate s3 key...
-	s3Key := regResponse.DepositPath
-	if cmd == "submit-bag" {
-		s3Key = filepath.Join(regResponse.DepositPath, bagList[0])
-	}
+	s3Key := filepath.Join(regResponse.DepositPath, bagName)
 
 	// upload the assets to S3
 	err = syncAssets(localDir, regResponse.DepositBucket, s3Key)
@@ -54,35 +42,29 @@ func submitContent(baseUrl string, cmd string, environment string, poll bool, ci
 	}
 
 	// do the submission initiate
-	err = initiate(baseUrl, environment, cid, regResponse.SubmissionIdentifier, bagList, httpClient)
+	err = initiate(cfg, httpClient, regResponse.SubmissionIdentifier, bagName)
 	if err != nil {
 		return err
 	}
 
-	// we submitted a tree, poll for submission status
-	//if cmd == "submit-tree" {
-	return getSubmitStatus(baseUrl, environment, poll, regResponse.SubmissionIdentifier)
-	//}
-
-	// we submitted a bag, poll for bag status
-	//return getBagStatus(baseUrl, environment, poll, bagList[0])
+	return nil
 }
 
-func register(baseUrl string, environment string, cid string, httpClient *http.Client) (*SubmitRegisterResponse, error) {
-
-	// construct the URL
-	url := baseUrl + "/register/" + environment
+func register(cfg *ServiceConfig, httpClient *http.Client) (*SubmitRegisterResponse, error) {
 
 	req := SubmitRegisterRequest{}
-	req.ClientIdentifier = cid
+	req.ClientIdentifier = cfg.APTServiceClient
 	pl, err := json.Marshal(req)
 	if err != nil {
 		log.Printf("ERROR: json.Marshal() failed (%s)", err.Error())
 		return nil, err
 	}
 
+	// create our request headers
+	headers := map[string]string{"Accept": "application/json"}
+
 	// post the request
-	pl, err = httpPost(httpClient, url, pl, "application/json")
+	pl, err = httpPost(httpClient, cfg.APTServiceRegister, pl, headers)
 	if err != nil {
 		log.Printf("ERROR: received [%s] (%s)", string(pl), err.Error())
 		return nil, err
@@ -100,15 +82,12 @@ func register(baseUrl string, environment string, cid string, httpClient *http.C
 	return &resp, nil
 }
 
-func initiate(baseUrl string, environment string, cid string, sid string, bagList []string, httpClient *http.Client) error {
-
-	// construct the URL
-	url := baseUrl + "/initiate/" + environment
+func initiate(cfg *ServiceConfig, httpClient *http.Client, sid string, bagName string) error {
 
 	req := SubmitInitiateRequest{}
-	req.ClientIdentifier = cid
+	req.ClientIdentifier = cfg.APTServiceClient
 	req.SubmissionIdentifier = sid
-	req.BagFolders = bagList
+	req.BagFolders = []string{bagName}
 
 	pl, err := json.Marshal(req)
 	if err != nil {
@@ -116,8 +95,11 @@ func initiate(baseUrl string, environment string, cid string, sid string, bagLis
 		return err
 	}
 
+	// create our request headers
+	headers := map[string]string{"Accept": "application/json"}
+
 	// post the request
-	pl, err = httpPost(httpClient, url, pl, "application/json")
+	pl, err = httpPost(httpClient, cfg.APTServiceSubmit, pl, headers)
 	if err != nil {
 		log.Printf("ERROR: received [%s] (%s)", string(pl), err.Error())
 		return err
@@ -167,31 +149,6 @@ func syncAssets(local string, bucket string, path string) error {
 	log.Printf("INFO: %d bytes written, %d files uploaded, %d files deleted", stats.Bytes, stats.Files, stats.DeletedFiles)
 
 	return nil
-}
-
-// if we are submitting a tree, we need to locate all the directories. If we are submitting a bag
-// the bag name is the basename of the localdir
-func makeBagList(cmd string, localDir string) []string {
-
-	bagList := make([]string, 0)
-
-	if cmd == "submit-bag" {
-		bagList = append(bagList, filepath.Base(localDir))
-		return bagList
-	}
-
-	entries, err := os.ReadDir(localDir)
-	if err != nil {
-		log.Printf("ERROR: read dir (%s)", err.Error())
-		return bagList
-	}
-
-	for _, entry := range entries {
-		if entry.IsDir() { // Check if the entry is a directory
-			bagList = append(bagList, filepath.Base(entry.Name()))
-		}
-	}
-	return bagList
 }
 
 //

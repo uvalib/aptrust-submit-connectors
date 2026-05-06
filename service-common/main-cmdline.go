@@ -10,6 +10,7 @@ type ServiceOptions struct {
 	StartDate string
 	EndDate   string
 	SingleId  string
+	NoFiles   bool
 	NoSubmit  bool
 }
 
@@ -21,6 +22,7 @@ func main() {
 	flag.StringVar(&opts.StartDate, "startdate", "", "The object set start date, YYYY-MM-DD")
 	flag.StringVar(&opts.EndDate, "enddate", "", "The object set end date, YYYY-MM-DD")
 	flag.StringVar(&opts.SingleId, "singleid", "", "Submit a single object")
+	flag.BoolVar(&opts.NoFiles, "nofiles", false, "No file download")
 	flag.BoolVar(&opts.NoSubmit, "nosubmit", false, "Generate but dont actually submit")
 
 	flag.Parse()
@@ -39,6 +41,11 @@ func main() {
 	if len(opts.SingleId) == 0 && (len(opts.StartDate) != 10 || len(opts.EndDate) != 10) {
 		flag.PrintDefaults()
 		os.Exit(1)
+	}
+
+	// no submitting to APT if we do not download files
+	if opts.NoFiles == true {
+		opts.NoSubmit = true
 	}
 
 	// commandline options look good, issue startup message

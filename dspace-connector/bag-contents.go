@@ -6,6 +6,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -13,7 +14,7 @@ import (
 
 var bagNamePrefix = "LibraOpen-"
 
-func createBagContents(cfg *ServiceConfig, httpClient *http.Client, item *ItemResponse, rawItem []byte, nativeId string) (string, error) {
+func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *http.Client, item *ItemResponse, rawItem []byte, nativeId string) (string, error) {
 
 	var err error
 
@@ -27,6 +28,8 @@ func createBagContents(cfg *ServiceConfig, httpClient *http.Client, item *ItemRe
 
 	// generate the new bag name
 	bagName := fmt.Sprintf("%s%s", bagNamePrefix, identifier)
+
+	log.Printf("INFO: creating contents for bag: %s", bagName)
 
 	// create/cleanup the asset working directory
 	assetDir := filepath.Join(cfg.ScratchFileSystem, bagName)
@@ -68,22 +71,26 @@ func createBagContents(cfg *ServiceConfig, httpClient *http.Client, item *ItemRe
 	// add to manifest, no fingerprint yet
 	manifest[payloadFilename] = ""
 
-	for _, f := range item.Content {
+	if opts.NoFiles == false {
+		for _, f := range item.Content {
 
-		// download the file
-		b, err := httpGet(httpClient, f.Link, make(map[string]string))
-		if err != nil {
-			return "", err
+			log.Printf("INFO: downloading %s", f.Link)
+
+			// download the file
+			b, err := httpGet(httpClient, f.Link, make(map[string]string))
+			if err != nil {
+				return "", err
+			}
+
+			// and write it
+			err = writeFile(filepath.Join(assetDir, f.Name), b)
+			if err != nil {
+				return "", err
+			}
+
+			// add to manifest, add fingerprint if we have it
+			manifest[f.Name] = ""
 		}
-
-		// and write it
-		err = writeFile(filepath.Join(assetDir, f.Name), b)
-		if err != nil {
-			return "", err
-		}
-
-		// add to manifest, add fingerprint if we have it
-		manifest[f.Name] = ""
 	}
 
 	// generate the manifest contents
