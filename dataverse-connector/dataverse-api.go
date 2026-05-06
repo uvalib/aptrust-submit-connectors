@@ -46,10 +46,11 @@ type ItemFiles struct {
 }
 
 type ItemDataFile struct {
-	Id       int    `json:"id"`
-	Filename string `json:"filename"`
-	Filesize int64  `json:"filesize"`
-	MD5      string `json:"md5"`
+	Id           int    `json:"id"`
+	Filename     string `json:"filename"`
+	Filesize     int64  `json:"filesize"`
+	OriginalName string `json:"originalFileName"`
+	MD5          string `json:"md5"`
 }
 
 type ItemMetadata struct {

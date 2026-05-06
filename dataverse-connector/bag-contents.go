@@ -108,8 +108,16 @@ func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *htt
 				return "", err
 			}
 
+			fp := f.File.MD5
+			if len(f.File.OriginalName) != 0 {
+
+				// this is a special case where the original file was transformed in some manner by
+				// the external service so the fingerprint is unreliable
+				log.Printf("WARNING: likely derived asset, ignoring fingerprint for %s", f.File.Filename)
+				fp = ""
+			}
 			// add to manifest, add fingerprint if we have it
-			manifest[f.File.Filename] = f.File.MD5
+			manifest[f.File.Filename] = fp
 		}
 	}
 
