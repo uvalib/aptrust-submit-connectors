@@ -44,7 +44,6 @@ func httpGet(client *http.Client, url string, headers map[string]string) ([]byte
 	for k, v := range headers {
 		req.Header.Add(k, v)
 	}
-	//req.Header.Add("Accept", "application/json")
 
 	return httpSend(client, req)
 }

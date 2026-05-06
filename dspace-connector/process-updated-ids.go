@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"path/filepath"
 	"strings"
 )
 
@@ -43,29 +44,23 @@ func processUpdatedIds(cfg *ServiceConfig, opts *ServiceOptions, ids []string) e
 			return err
 		}
 
-		// generate the new bag name
-		//bagName := fmt.Sprintf("%s-%s-%sv%d.%d",
-		//	resp.Data.Protocol,
-		//	strings.Replace(resp.Data.Authority, ".", "-", -1),
-		//	strings.Replace(strings.ToLower(resp.Data.Identifier), "/", "-", -1),
-		//	resp.Data.Latest.VersionMajor,
-		//	resp.Data.Latest.VersionMinor)
-
-		fmt.Printf("received %d file(s)\n", len(resp.Content))
-		var description, title string
-		md, ok := resp.Item.Metadata[descriptionMetadataFieldName]
-		if ok {
-			description = md[0].Value
-		}
-		md, ok = resp.Item.Metadata[titleMetadataFieldName]
-		if ok {
-			title = md[0].Value
+		// generate the bag contents
+		bagName, err := createBagContents(cfg, httpClient, &resp, pl, id)
+		if err != nil {
+			return err
 		}
 
-		fmt.Printf("title [%s], description [%s]\n", title, description)
-		//for k, v := range resp.Item.Metadata {
-		//	fmt.Printf("%s: %s\n", k, v[0].Value)
-		//}
+		// do we actually want to submit this bag?
+		if opts.NoSubmit == false {
+			log.Printf("INFO: submitting bag: %s", bagName)
+			//err = submitBagContents()
+			if err != nil {
+				return err
+			}
+			_ = cleanScratchFilesystem(filepath.Join(cfg.ScratchFileSystem, bagName))
+		} else {
+			log.Printf("INFO: not submitting bag: %s", bagName)
+		}
 	}
 
 	return nil

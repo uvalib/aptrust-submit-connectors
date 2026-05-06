@@ -6,6 +6,11 @@ package main
 
 import "time"
 
+var payloadFilename = "native-payload.json"
+var descriptionFileName = "aptrust-description.txt"
+var titleFileName = "aptrust-title.txt"
+var manifestFilename = "manifest-md5.txt"
+
 type SubmitRegisterRequest struct {
 	ClientIdentifier string `json:"cid"`        // the client identifier
 	Collection       string `json:"collection"` // the collection name for the submission (optional)

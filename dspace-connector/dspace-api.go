@@ -26,6 +26,7 @@ type ItemDataFile struct {
 
 var titleMetadataFieldName = "dc.title"
 var descriptionMetadataFieldName = "dc.description.abstract"
+var identifierMetadataFieldName = "dc.identifier"
 
 //
 // end of file
