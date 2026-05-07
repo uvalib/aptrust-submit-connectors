@@ -72,9 +72,9 @@ func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *htt
 	manifest[payloadFilename] = ""
 
 	if opts.NoFiles == false {
-		for _, f := range item.Content {
+		for ix, f := range item.Content {
 
-			log.Printf("INFO: downloading %s", f.Link)
+			log.Printf("INFO: downloading %d of %d, %s (%d bytes)", ix+1, len(item.Content), f.Link)
 
 			// download the file
 			b, err := httpGet(httpClient, f.Link, make(map[string]string))

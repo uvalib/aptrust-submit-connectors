@@ -14,14 +14,16 @@ import (
 
 func processUpdatedIds(cfg *ServiceConfig, opts *ServiceOptions, ids []string) error {
 
-	log.Printf("INFO: processing %d updated id(s)", len(ids))
+	log.Printf("INFO: processing %d updated item(s)", len(ids))
 
 	// create our HTTP client
 	httpClient := newHttpClient(1, cfg.HTTPTimeout)
 	// important, cleanup properly
 	defer httpClient.CloseIdleConnections()
 
-	for _, id := range ids {
+	for ix, id := range ids {
+		log.Printf("INFO: processing %d of %d (id: %s)", ix+1, len(ids), id)
+
 		url := fmt.Sprintf("%s/%s", cfg.ApiEndpoint, cfg.ApiItemPathQuery)
 
 		// fill in the needed components
@@ -45,19 +47,20 @@ func processUpdatedIds(cfg *ServiceConfig, opts *ServiceOptions, ids []string) e
 		}
 
 		// generate the bag contents
-		bagName, err := createBagContents(cfg, httpClient, &resp, pl, id)
+		bagName, err := createBagContents(cfg, opts, httpClient, &resp, pl, id)
 		if err != nil {
 			return err
 		}
 
 		// do we actually want to submit this bag?
 		if opts.NoSubmit == false {
+			workDir := filepath.Join(cfg.ScratchFileSystem, bagName)
 			log.Printf("INFO: submitting bag: %s", bagName)
-			//err = submitBagContents()
+			err = submitBagContents(cfg, httpClient, workDir, bagName)
 			if err != nil {
 				return err
 			}
-			_ = cleanScratchFilesystem(filepath.Join(cfg.ScratchFileSystem, bagName))
+			_ = cleanScratchFilesystem(workDir)
 		} else {
 			log.Printf("INFO: not submitting bag: %s", bagName)
 		}
