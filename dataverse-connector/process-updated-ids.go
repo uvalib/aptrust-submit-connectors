@@ -14,14 +14,17 @@ import (
 
 func processUpdatedIds(cfg *ServiceConfig, opts *ServiceOptions, ids []string) error {
 
-	log.Printf("INFO: processing %d updated id(s)", len(ids))
+	log.Printf("INFO: processing %d updated item(s)", len(ids))
 
 	// create our HTTP client
 	httpClient := newHttpClient(1, cfg.HTTPTimeout)
 	// important, cleanup properly
 	defer httpClient.CloseIdleConnections()
 
-	for _, id := range ids {
+	for ix, id := range ids {
+
+		log.Printf("INFO: processing %d of %d (id: %s)", ix+1, len(ids), id)
+
 		url := fmt.Sprintf("%s/%s", cfg.ApiEndpoint, cfg.ApiItemPathQuery)
 
 		// fill in the needed components

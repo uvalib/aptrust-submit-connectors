@@ -14,6 +14,8 @@ import (
 
 func getUpdatedIds(cfg *ServiceConfig, opts *ServiceOptions) ([]string, error) {
 
+	log.Printf("INFO: getting latest items...")
+
 	// create our HTTP client
 	httpClient := newHttpClient(1, cfg.HTTPTimeout)
 	// important, cleanup properly

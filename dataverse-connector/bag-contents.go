@@ -82,28 +82,21 @@ func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *htt
 		// create our request headers
 		headers := map[string]string{"X-Dataverse-key": cfg.ApiToken}
 
-		for _, f := range item.Data.Latest.Files {
+		for ix, f := range item.Data.Latest.Files {
 
 			url := fmt.Sprintf("%s/%s", cfg.ApiEndpoint, cfg.ApiFilePathQuery)
 			// fill in the needed components
 			url = strings.Replace(url, "{{:id}}", strconv.Itoa(f.File.Id), 1)
 
 			// seems to be the case sometimes...
-			if f.File.Filesize < 0 {
+			if f.File.Filesize <= 0 {
 				log.Printf("WARNING: suspect filesize for %s (%d), ignoring this file", f.File.Filename, f.File.Filesize)
 				continue
 			}
 
-			log.Printf("INFO: downloading %s (%d bytes)", f.File.Filename, f.File.Filesize)
+			log.Printf("INFO: downloading %d of %d, %s (%d bytes)", ix+1, len(item.Data.Latest.Files), f.File.Filename, f.File.Filesize)
 
-			// download the file
-			b, err := httpGet(httpClient, url, headers)
-			if err != nil {
-				return "", err
-			}
-
-			// and write it
-			err = writeFile(filepath.Join(assetDir, f.File.Filename), b)
+			err = fastDownload(url, headers, filepath.Join(assetDir, f.File.Filename))
 			if err != nil {
 				return "", err
 			}

@@ -128,7 +128,7 @@ func canRetry(err error) bool {
 		return true
 	}
 
-	if strings.Contains(err.Error(), "Client.Timeout exceeded") == true {
+	if strings.Contains(err.Error(), "Client.Timeout") == true {
 		return true
 	}
 
@@ -141,6 +141,10 @@ func canRetry(err error) bool {
 	}
 
 	if strings.Contains(err.Error(), "network is down") == true {
+		return true
+	}
+
+	if strings.Contains(err.Error(), "TLS handshake timeout") == true {
 		return true
 	}
 

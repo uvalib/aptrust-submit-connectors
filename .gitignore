@@ -7,6 +7,7 @@
 apt-api.go
 apt-submit.go
 env.go
+fast-download.go
 helpers.go
 http.go
 main-cmdline.go
