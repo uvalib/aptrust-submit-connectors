@@ -2,6 +2,8 @@
 /tmp
 */bin/
 */tmp/
+package/scripts/build.ksh
+package/scripts/shell.ksh
 
 # ignore common/shared files
 apt-api.go
