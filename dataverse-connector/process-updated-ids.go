@@ -56,7 +56,6 @@ func processUpdatedIds(cfg *ServiceConfig, opts *ServiceOptions, ids []string) e
 		}
 
 		//fmt.Printf("%s\n", pl)
-		//fmt.Printf("found %d fields\n", len(resp.Data.Latest.Metadata.Citation.Fields))
 
 		// generate the bag contents
 		bagName, err := createBagContents(cfg, opts, httpClient, &resp, pl, id)

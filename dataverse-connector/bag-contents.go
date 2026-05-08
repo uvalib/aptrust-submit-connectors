@@ -96,7 +96,10 @@ func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *htt
 
 			log.Printf("INFO: downloading %d of %d, %s (%d bytes)", ix+1, len(item.Data.Latest.Files), f.File.Filename, f.File.Filesize)
 
-			err = fastDownload(url, headers, filepath.Join(assetDir, f.File.Filename))
+			// map the name if we have too
+			mappedName := specialCaseNameMapper(f.File.Filename, nativeId)
+
+			err = fastDownload(url, headers, filepath.Join(assetDir, mappedName))
 			if err != nil {
 				return "", err
 			}
@@ -106,11 +109,11 @@ func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *htt
 
 				// this is a special case where the original file was transformed in some manner by
 				// the external service so the fingerprint is unreliable
-				log.Printf("WARNING: likely derived asset, ignoring fingerprint for %s", f.File.Filename)
+				log.Printf("WARNING: likely derived asset, ignoring fingerprint for %s", mappedName)
 				fp = ""
 			}
 			// add to manifest, add fingerprint if we have it
-			manifest[f.File.Filename] = fp
+			manifest[mappedName] = fp
 		}
 	}
 
