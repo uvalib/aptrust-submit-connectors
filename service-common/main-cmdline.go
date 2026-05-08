@@ -10,6 +10,7 @@ type ServiceOptions struct {
 	StartDate string
 	EndDate   string
 	SingleId  string
+	NoProcess bool
 	NoFiles   bool
 	NoSubmit  bool
 }
@@ -22,6 +23,7 @@ func main() {
 	flag.StringVar(&opts.StartDate, "startdate", "", "The object set start date, YYYY-MM-DD")
 	flag.StringVar(&opts.EndDate, "enddate", "", "The object set end date, YYYY-MM-DD")
 	flag.StringVar(&opts.SingleId, "singleid", "", "Submit a single object")
+	flag.BoolVar(&opts.NoProcess, "noprocess", false, "Count but dont generate")
 	flag.BoolVar(&opts.NoFiles, "nofiles", false, "No file download")
 	flag.BoolVar(&opts.NoSubmit, "nosubmit", false, "Generate but dont actually submit")
 
@@ -61,10 +63,11 @@ func main() {
 		idList = append(idList, opts.SingleId)
 	} else {
 		idList, err = getUpdatedIds(cfg, &opts)
+		log.Printf("INFO: %d updated item(s) reported", len(idList))
 	}
 
-	// process the set of id's
-	if len(idList) != 0 {
+	// process the set of id's (if appropriate)
+	if opts.NoProcess == false && len(idList) != 0 {
 		err = processUpdatedIds(cfg, &opts, idList)
 	}
 
