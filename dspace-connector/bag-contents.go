@@ -76,6 +76,9 @@ func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *htt
 
 			log.Printf("INFO: downloading %d of %d, %s (%d bytes)", ix+1, len(item.Content), f.Link)
 
+			// map the name if we have too
+			//mappedName := specialCaseNameMapper(f.Name, nativeId)
+
 			// download the file
 			b, err := httpGet(httpClient, f.Link, make(map[string]string))
 			if err != nil {
