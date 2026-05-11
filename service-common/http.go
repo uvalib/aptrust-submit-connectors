@@ -75,7 +75,7 @@ func httpSend(client *http.Client, req *http.Request) ([]byte, error) {
 		//start := time.Now()
 		response, err = client.Do(req)
 		//duration := time.Since(start)
-		//log.Printf("INFO: %s %s (elapsed %d ms)", req.Method, url, duration.Milliseconds())
+		//log.Printf("INFO: %s %s (elapsed %0.2f seconds)", req.Method, url, duration.Seconds())
 
 		count++
 		if err != nil {
