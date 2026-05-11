@@ -14,20 +14,12 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/seqsense/s3sync/v2"
 )
-
-type Logger struct {
-}
-
-func (l *Logger) Logf(format string, v ...any) {
-	//log.Printf("INFO: "+format, v...)
-}
 
 func submitBagContents(cfg *ServiceConfig, httpClient *http.Client, localDir string, bagName string) error {
 
 	// do the submission registration
-	regResponse, err := register(cfg, httpClient)
+	regResponse, err := register(cfg, httpClient, bagName)
 	if err != nil {
 		return err
 	}
@@ -50,10 +42,11 @@ func submitBagContents(cfg *ServiceConfig, httpClient *http.Client, localDir str
 	return nil
 }
 
-func register(cfg *ServiceConfig, httpClient *http.Client) (*SubmitRegisterResponse, error) {
+func register(cfg *ServiceConfig, httpClient *http.Client, bagName string) (*SubmitRegisterResponse, error) {
 
 	req := SubmitRegisterRequest{}
 	req.ClientIdentifier = cfg.APTServiceClient
+	req.Collection = bagName
 	pl, err := json.Marshal(req)
 	if err != nil {
 		log.Printf("ERROR: json.Marshal() failed (%s)", err.Error())
@@ -126,11 +119,8 @@ func syncAssets(local string, bucket string, path string) error {
 		return err
 	}
 
-	// set the logger cos we dont want the standard logging
-	s3sync.SetLogger(&Logger{})
-
-	// new sync manager
-	syncManager := s3sync.New(cfg, s3sync.WithParallel(5))
+	// new sync manager (16 workers is the default)
+	syncManager := s3sync.New(cfg, s3sync.WithParallel(32))
 
 	// our destination location
 	source := fmt.Sprintf("s3://%s/%s", bucket, path)
