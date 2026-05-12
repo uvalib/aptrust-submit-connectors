@@ -4,6 +4,7 @@ go 1.26.2
 
 require (
 	github.com/aws/aws-sdk-go-v2/config v1.32.17
+	github.com/dustin/go-humanize v1.0.1
 	github.com/melbahja/got v0.7.0
 	github.com/seqsense/s3sync/v2 v2.0.0
 )

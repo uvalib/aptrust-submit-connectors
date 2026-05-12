@@ -13,6 +13,9 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
+
+	"github.com/dustin/go-humanize"
 )
 
 func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *http.Client, item *ItemResponse, rawItem []byte, nativeId string) (string, error) {
@@ -94,14 +97,19 @@ func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *htt
 				continue
 			}
 
-			log.Printf("INFO: downloading %d of %d, %s (%d bytes)", ix+1, len(item.Data.Latest.Files), f.File.Filename, f.File.Filesize)
+			log.Printf("INFO: downloading %d of %d, %s (%s)", ix+1, len(item.Data.Latest.Files), f.File.Filename, humanize.IBytes((uint64)(f.File.Filesize)))
 
 			// map the name if we have too
 			mappedName := specialCaseNameMapper(f.File.Filename, nativeId)
 
-			err = fastDownload(url, headers, filepath.Join(assetDir, mappedName))
+			// try the download 3 times
+			err = retry(3, 1*time.Second, func() error {
+				return fastDownload(url, headers, filepath.Join(assetDir, mappedName))
+			})
+
 			if err != nil {
-				return "", err
+				log.Printf("ERROR: skipping download of %s (%s)", f.File.Filename, err.Error())
+				continue
 			}
 
 			fp := f.File.MD5

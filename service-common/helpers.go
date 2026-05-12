@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"time"
 )
 
 func fatalIfError(err error) {
@@ -70,6 +71,19 @@ func specialCaseNameMapper(filename string, specialPrefix string) string {
 		return newName
 	}
 	return filename
+}
+
+func retry(attempts int, delay time.Duration, fn func() error) error {
+	var err error
+	for i := 0; i < attempts; i++ {
+		if err = fn(); err == nil {
+			return nil
+		}
+		log.Printf("WARNING: attempt %d failed, retrying...", i+1)
+		time.Sleep(delay)
+	}
+	log.Printf("ERROR: giving up after %d attempts", attempts)
+	return err
 }
 
 //
