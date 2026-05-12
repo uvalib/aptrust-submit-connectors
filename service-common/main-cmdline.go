@@ -10,6 +10,7 @@ type ServiceOptions struct {
 	StartDate string
 	EndDate   string
 	SingleId  string
+	ResumeId  string
 	NoProcess bool
 	NoFiles   bool
 	NoSubmit  bool
@@ -23,14 +24,15 @@ func main() {
 	flag.StringVar(&opts.StartDate, "startdate", "", "The object set start date, YYYY-MM-DD")
 	flag.StringVar(&opts.EndDate, "enddate", "", "The object set end date, YYYY-MM-DD")
 	flag.StringVar(&opts.SingleId, "singleid", "", "Submit a single object")
+	flag.StringVar(&opts.ResumeId, "resumeid", "", "Resume at this id in the object set")
 	flag.BoolVar(&opts.NoProcess, "noprocess", false, "Count but dont generate")
 	flag.BoolVar(&opts.NoFiles, "nofiles", false, "No file download")
-	flag.BoolVar(&opts.NoSubmit, "nosubmit", false, "Generate but dont actually submit")
+	flag.BoolVar(&opts.NoSubmit, "nosubmit", false, "Generate but dont submit")
 
 	flag.Parse()
 
 	// verify we have specified something sensible...
-	if len(opts.StartDate) == 0 && len(opts.EndDate) == 0 && len(opts.SingleId) == 0 {
+	if len(opts.StartDate) == 0 && len(opts.EndDate) == 0 && len(opts.SingleId) == 0 && len(opts.ResumeId) == 0 {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
@@ -41,6 +43,11 @@ func main() {
 	}
 
 	if len(opts.SingleId) == 0 && (len(opts.StartDate) != 10 || len(opts.EndDate) != 10) {
+		flag.PrintDefaults()
+		os.Exit(1)
+	}
+
+	if len(opts.ResumeId) != 0 && (len(opts.StartDate) != 10 || len(opts.EndDate) != 10) {
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
@@ -69,6 +76,11 @@ func main() {
 	// process the set of id's (if appropriate)
 	if opts.NoProcess == false && len(idList) != 0 {
 		err = processUpdatedIds(cfg, &opts, idList)
+	} else {
+		for ix, id := range idList {
+			log.Printf("INFO: %d of %d ==> %s", ix+1, len(idList), id)
+		}
+
 	}
 
 	if err == nil {

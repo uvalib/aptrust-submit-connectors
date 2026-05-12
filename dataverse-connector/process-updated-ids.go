@@ -21,7 +21,18 @@ func processUpdatedIds(cfg *ServiceConfig, opts *ServiceOptions, ids []string) e
 	// important, cleanup properly
 	defer httpClient.CloseIdleConnections()
 
+	resume := len(opts.ResumeId) == 0
+
 	for ix, id := range ids {
+
+		if resume == false {
+			if opts.ResumeId == id {
+				resume = true
+			} else {
+				log.Printf("INFO: skipping %d of %d (id: %s)", ix+1, len(ids), id)
+				continue
+			}
+		}
 
 		log.Printf("INFO: processing %d of %d (id: %s)", ix+1, len(ids), id)
 
