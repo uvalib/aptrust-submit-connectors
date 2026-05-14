@@ -46,6 +46,10 @@ func processUpdatedIds(cfg *ServiceConfig, opts *ServiceOptions, ids []string) e
 			return err
 		}
 
+		//fmt.Printf("%s\n", pl)
+		//fmt.Printf("%d metadata fields\n", len(resp.Metadata))
+		//fmt.Printf("%d bundle links\n", len(resp.Links))
+
 		// generate the bag contents
 		bagName, err := createBagContents(cfg, opts, httpClient, &resp, pl, id)
 		if err != nil {
