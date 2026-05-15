@@ -63,9 +63,15 @@ func main() {
 	// Get config params and use them to init service context. Any issues are fatal
 	cfg := loadConfiguration()
 
+	// do authentication if appropriate
+	err := authenticate(cfg)
+	if err != nil {
+		log.Printf("ERROR: authentication failure (%s), terminating", err.Error())
+		os.Exit(1)
+	}
+
 	// get or construct the set of ID's to be processed
 	idList := make([]string, 0)
-	var err error
 	if len(opts.SingleId) != 0 {
 		idList = append(idList, opts.SingleId)
 	} else {
@@ -80,7 +86,6 @@ func main() {
 		for ix, id := range idList {
 			log.Printf("INFO: %d of %d ==> %s", ix+1, len(idList), id)
 		}
-
 	}
 
 	if err == nil {

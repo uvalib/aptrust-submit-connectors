@@ -80,6 +80,7 @@ func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *htt
 		if ok {
 			// create our request headers
 			headers := map[string]string{"Accept": "application/json"}
+			headers = addAuthHeader(headers)
 
 			// issue the request
 			pl, err := httpGet(httpClient, bundlesUrl.Href, headers)
@@ -130,7 +131,7 @@ func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *htt
 								})
 
 								if err != nil {
-									log.Printf("ERROR: skipping download of %s (%s)", bs.Name, err.Error())
+									log.Printf("ERROR: skipping download of %s url: [%s] (%s)", bs.Name, contentUrl.Href, err.Error())
 									continue
 								}
 

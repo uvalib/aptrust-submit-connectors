@@ -13,11 +13,11 @@ type ServiceConfig struct {
 	APTServiceClient   string // client identifier for APTrust submit
 
 	// API configuration
-	ApiEndpoint string
-	//ApiToken            string
+	ApiEndpoint         string
 	ApiUpdatedPathQuery string
 	ApiItemPathQuery    string
-	//ApiFilePathQuery    string
+	ApiUser             string
+	ApiPassword         string
 
 	// other configuration
 	ScratchFileSystem string
@@ -37,10 +37,10 @@ func loadConfiguration() *ServiceConfig {
 
 	// API configuration
 	cfg.ApiEndpoint = ensureSetAndNonEmpty("API_ENDPOINT")
-	//cfg.ApiToken = ensureSetAndNonEmpty("API_TOKEN")
 	cfg.ApiUpdatedPathQuery = ensureSetAndNonEmpty("API_UPDATED_PATH")
 	cfg.ApiItemPathQuery = ensureSetAndNonEmpty("API_ITEM_PATH")
-	//cfg.ApiFilePathQuery = ensureSetAndNonEmpty("API_FILE_PATH")
+	cfg.ApiUser = ensureSetAndNonEmpty("API_USERNAME")
+	cfg.ApiPassword = ensureSetAndNonEmpty("API_PASSWORD")
 
 	// other configuration
 	cfg.ScratchFileSystem = ensureSetAndNonEmpty("SCRATCH_FS")
@@ -53,10 +53,10 @@ func loadConfiguration() *ServiceConfig {
 
 	// API configuration
 	log.Printf("[CONFIG] ApiEndpoint         = [%s]", cfg.ApiEndpoint)
-	//log.Printf("[CONFIG] ApiToken            = [REDACTED]")
 	log.Printf("[CONFIG] ApiUpdatedPathQuery = [%s]", cfg.ApiUpdatedPathQuery)
 	log.Printf("[CONFIG] ApiItemPathQuery    = [%s]", cfg.ApiItemPathQuery)
-	//log.Printf("[CONFIG] ApiFilePathQuery    = [%s]", cfg.ApiFilePathQuery)
+	log.Printf("[CONFIG] ApiUser             = [%s]", cfg.ApiUser)
+	log.Printf("[CONFIG] ApiPassword         = [REDACTED]")
 
 	// other configuration
 	log.Printf("[CONFIG] ScratchFileSystem   = [%s]", cfg.ScratchFileSystem)

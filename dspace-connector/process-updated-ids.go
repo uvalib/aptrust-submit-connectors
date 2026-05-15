@@ -31,6 +31,7 @@ func processUpdatedIds(cfg *ServiceConfig, opts *ServiceOptions, ids []string) e
 
 		// create our request headers
 		headers := map[string]string{"Accept": "application/json"}
+		headers = addAuthHeader(headers)
 
 		// issue the request
 		pl, err := httpGet(httpClient, url, headers)

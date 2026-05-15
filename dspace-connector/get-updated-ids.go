@@ -27,6 +27,7 @@ func getUpdatedIds(cfg *ServiceConfig, opts *ServiceOptions) ([]string, error) {
 
 	// create our request headers
 	headers := map[string]string{"Accept": "application/json"}
+	headers = addAuthHeader(headers)
 
 	// our response slice
 	ids := make([]string, 0)
