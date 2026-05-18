@@ -32,7 +32,9 @@ func authenticate(cfg *ServiceConfig) error {
 
 	log.Printf("INFO: authenticating...")
 
-	client := &http.Client{}
+	client := &http.Client{
+		Timeout: time.Duration(cfg.HTTPTimeout) * time.Second,
+	}
 
 	// endpoints we will be using
 	xsrfUrl := fmt.Sprintf("%s/%s", cfg.ApiEndpoint, xsrfEndpoint)
@@ -155,7 +157,9 @@ func renewAuthToken() error {
 	}
 	req.AddCookie(&cookie)
 
-	client := &http.Client{}
+	client := &http.Client{
+		// default timeout (30 seconds) is OK for now
+	}
 	response, err := client.Do(req)
 	if err != nil {
 		log.Printf("ERROR: POST %s failed with error (%s)", authorizationTokenRenewUrl, err.Error())
