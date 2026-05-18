@@ -36,7 +36,7 @@ func httpGet(client *http.Client, url string, headers map[string]string) ([]byte
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Printf("ERROR: GET %s failed with error (%s)", url, err)
+		log.Printf("ERROR: GET %s failed with error (%s)", url, err.Error())
 		return nil, err
 	}
 
@@ -53,7 +53,7 @@ func httpPost(client *http.Client, url string, payload []byte, headers map[strin
 	reader := bytes.NewReader(payload)
 	req, err := http.NewRequest("POST", url, reader)
 	if err != nil {
-		log.Printf("ERROR: POST %s failed with error (%s)", url, err)
+		log.Printf("ERROR: POST %s failed with error (%s)", url, err.Error())
 		return nil, err
 	}
 
@@ -80,7 +80,7 @@ func httpSend(client *http.Client, req *http.Request) ([]byte, error) {
 		count++
 		if err != nil {
 			if canRetry(err) == false {
-				log.Printf("ERROR: %s %s failed with error (%s)", req.Method, url, err)
+				log.Printf("ERROR: %s %s failed with error (%s)", req.Method, url, err.Error())
 				return nil, err
 			}
 
@@ -89,7 +89,7 @@ func httpSend(client *http.Client, req *http.Request) ([]byte, error) {
 				return nil, err
 			}
 
-			log.Printf("ERROR: %s %s failed with error, retrying (%s)", req.Method, url, err)
+			log.Printf("ERROR: %s %s failed with error, retrying (%s)", req.Method, url, err.Error())
 
 			// sleep for a bit before retrying
 			time.Sleep(httpRetrySleepTime)
@@ -112,7 +112,7 @@ func httpSend(client *http.Client, req *http.Request) ([]byte, error) {
 
 			body, err := io.ReadAll(response.Body)
 			if err != nil {
-				log.Printf("ERROR: %s %s failed with error (%s)", req.Method, url, err)
+				log.Printf("ERROR: %s %s failed with error (%s)", req.Method, url, err.Error())
 				return nil, err
 			}
 			//fmt.Printf( body )
