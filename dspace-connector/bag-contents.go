@@ -16,7 +16,7 @@ import (
 	"github.com/dustin/go-humanize"
 )
 
-var bagNamePrefix = "LibraOpen-"
+var bagNamePrefix = "LibraOpen"
 
 func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *http.Client, item *ItemResponse, rawItem []byte, nativeId string) (string, error) {
 
@@ -31,7 +31,7 @@ func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *htt
 	}
 
 	// generate the new bag name
-	bagName := fmt.Sprintf("%s%s", bagNamePrefix, identifier)
+	bagName := fmt.Sprintf("%s-%s", bagNamePrefix, identifier)
 
 	log.Printf("INFO: creating contents for bag: %s", bagName)
 
