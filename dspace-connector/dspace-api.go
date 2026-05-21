@@ -42,8 +42,9 @@ type ResultsPage struct {
 }
 
 type ItemResponse struct {
-	Metadata map[string][]ItemMetadataFields `json:"metadata"`
-	Links    map[string]LinkHref             `json:"_links"`
+	Discoverable bool                            `json:"discoverable"`
+	Metadata     map[string][]ItemMetadataFields `json:"metadata"`
+	Links        map[string]LinkHref             `json:"_links"`
 }
 
 type ItemMetadataFields struct {

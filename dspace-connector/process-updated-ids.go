@@ -48,8 +48,12 @@ func processUpdatedIds(cfg *ServiceConfig, opts *ServiceOptions, ids []string) e
 		}
 
 		//fmt.Printf("%s\n", pl)
-		//fmt.Printf("%d metadata fields\n", len(resp.Metadata))
-		//fmt.Printf("%d bundle links\n", len(resp.Links))
+
+		// hidden items are to be ignored
+		if resp.Discoverable == false {
+			log.Printf("INFO: item marked as undiscoverable, skipping")
+			continue
+		}
 
 		// generate the bag contents
 		bagName, err := createBagContents(cfg, opts, httpClient, &resp, pl, id)
