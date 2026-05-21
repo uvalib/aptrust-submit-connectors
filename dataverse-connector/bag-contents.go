@@ -18,15 +18,18 @@ import (
 	"github.com/dustin/go-humanize"
 )
 
+var bagNamePrefix = "DataVerse"
+
 func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *http.Client, item *ItemResponse, rawItem []byte, nativeId string) (string, error) {
 
 	var err error
 
 	// generate the new bag name
-	bagName := fmt.Sprintf("%s-%s-%sv%d.%d",
+	bagName := fmt.Sprintf("%s-%s-%s-%sv%d.%d",
+		bagNamePrefix,
 		item.Data.Protocol,
 		strings.Replace(item.Data.Authority, ".", "-", -1),
-		strings.Replace(strings.ToLower(item.Data.Identifier), "/", "-", -1),
+		strings.Replace(item.Data.Identifier, "/", "-", -1),
 		item.Data.Latest.VersionMajor,
 		item.Data.Latest.VersionMinor)
 
