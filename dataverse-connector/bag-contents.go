@@ -25,13 +25,14 @@ func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *htt
 	var err error
 
 	// generate the new bag name
-	bagName := fmt.Sprintf("%s-%s-%s-%sv%d.%d",
+	//	bagName := fmt.Sprintf("%s-%s-%s-%sv%d.%d",
+	bagName := fmt.Sprintf("%s-%s-%s-%s",
 		bagNamePrefix,
 		item.Data.Protocol,
 		strings.Replace(item.Data.Authority, ".", "-", -1),
-		strings.Replace(item.Data.Identifier, "/", "-", -1),
-		item.Data.Latest.VersionMajor,
-		item.Data.Latest.VersionMinor)
+		strings.Replace(item.Data.Identifier, "/", "-", -1))
+	//item.Data.Latest.VersionMajor,
+	//item.Data.Latest.VersionMinor)
 
 	log.Printf("INFO: creating contents for bag: %s", bagName)
 
