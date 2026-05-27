@@ -14,13 +14,13 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/config"
-        "github.com/seqsense/s3sync/v2"
+	"github.com/seqsense/s3sync/v2"
 )
 
-func submitBagContents(cfg *ServiceConfig, httpClient *http.Client, localDir string, bagName string) error {
+func submitBagContents(cfg *ServiceConfig, httpClient *http.Client, localDir string, collectionName string, bagName string) error {
 
 	// do the submission registration
-	regResponse, err := register(cfg, httpClient, bagName)
+	regResponse, err := register(cfg, httpClient, collectionName)
 	if err != nil {
 		return err
 	}
@@ -43,11 +43,11 @@ func submitBagContents(cfg *ServiceConfig, httpClient *http.Client, localDir str
 	return nil
 }
 
-func register(cfg *ServiceConfig, httpClient *http.Client, bagName string) (*SubmitRegisterResponse, error) {
+func register(cfg *ServiceConfig, httpClient *http.Client, collectionName string) (*SubmitRegisterResponse, error) {
 
 	req := SubmitRegisterRequest{}
 	req.ClientIdentifier = cfg.APTServiceClient
-	req.Collection = bagName
+	req.Collection = collectionName
 	pl, err := json.Marshal(req)
 	if err != nil {
 		log.Printf("ERROR: json.Marshal() failed (%s)", err.Error())

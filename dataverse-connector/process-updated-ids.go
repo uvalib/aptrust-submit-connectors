@@ -12,6 +12,8 @@ import (
 	"strings"
 )
 
+var libraDataCollectionName = "LibraData"
+
 func processUpdatedIds(cfg *ServiceConfig, opts *ServiceOptions, ids []string) error {
 
 	log.Printf("INFO: processing %d updated item(s)", len(ids))
@@ -78,7 +80,7 @@ func processUpdatedIds(cfg *ServiceConfig, opts *ServiceOptions, ids []string) e
 		if opts.NoSubmit == false {
 			workDir := filepath.Join(cfg.ScratchFileSystem, bagName)
 			log.Printf("INFO: submitting bag: %s", bagName)
-			err = submitBagContents(cfg, httpClient, workDir, bagName)
+			err = submitBagContents(cfg, httpClient, workDir, libraDataCollectionName, bagName)
 			if err != nil {
 				return err
 			}
