@@ -75,15 +75,19 @@ func specialCaseNameMapper(filename string, specialPrefix string) string {
 
 func retry(attempts int, delay time.Duration, fn func() error) error {
 	var err error
-	for i := 0; i < attempts; i++ {
+	ix := 0
+	for {
 		if err = fn(); err == nil {
 			return nil
 		}
-		log.Printf("WARNING: attempt %d failed, retrying...", i+1)
+		ix++
+		if ix >= attempts {
+			log.Printf("ERROR: giving up after %d attempts", attempts)
+			return err
+		}
+		log.Printf("WARNING: attempt %d failed, retrying...", ix)
 		time.Sleep(delay)
 	}
-	log.Printf("ERROR: giving up after %d attempts", attempts)
-	return err
 }
 
 //
