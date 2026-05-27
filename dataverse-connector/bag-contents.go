@@ -105,14 +105,16 @@ func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *htt
 
 			// map the name if we have too
 			mappedName := specialCaseNameMapper(f.File.Filename, nativeId)
+			fn := filepath.Join(assetDir, mappedName)
 
 			// try the download 3 times
-			err = retry(3, 1*time.Second, func() error {
-				return fastDownload(url, headers, filepath.Join(assetDir, mappedName))
+			err = retry(3, 5*time.Second, func() error {
+				return fastDownload(url, (uint64)(f.File.Filesize), headers, fn)
 			})
 
 			if err != nil {
-				log.Printf("ERROR: skipping download of %s (%s)", f.File.Filename, err.Error())
+				log.Printf("ERROR: skipping download of %s, url [%s] (%s)", f.File.Filename, url, err.Error())
+				_ = os.Remove(fn)
 				continue
 			}
 
