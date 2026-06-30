@@ -15,7 +15,7 @@ import (
 
 func getUpdatedIds(cfg *ServiceConfig, opts *ServiceOptions) ([]string, error) {
 
-	log.Printf("INFO: getting latest items...")
+	log.Printf("INFO: getting items between [%s] and [%s]", opts.StartDate, opts.EndDate)
 
 	// create our HTTP client
 	httpClient := newHttpClient(1, cfg.HTTPTimeout)
