@@ -92,6 +92,7 @@ func main() {
 		log.Printf("INFO: terminate normally")
 	} else {
 		log.Printf("ERROR: terminate with '%s'", err.Error())
+		os.Exit(1)
 	}
 
 }
