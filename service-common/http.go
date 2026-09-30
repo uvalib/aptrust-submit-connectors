@@ -93,6 +93,15 @@ func httpSend(client *http.Client, req *http.Request) ([]byte, error) {
 
 			// sleep for a bit before retrying
 			time.Sleep(httpRetrySleepTime)
+
+			// the previous attempt consumed the request body, get a fresh copy
+			if req.GetBody != nil {
+				req.Body, err = req.GetBody()
+				if err != nil {
+					log.Printf("ERROR: %s %s cannot reset request body (%s)", req.Method, url, err.Error())
+					return nil, err
+				}
+			}
 		} else {
 
 			defer response.Body.Close()
