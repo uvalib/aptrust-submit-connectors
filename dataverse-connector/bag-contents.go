@@ -51,7 +51,12 @@ func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *htt
 	// extract the interesting info from the metadata
 	for _, mdf := range item.Data.Latest.Metadata.Citation.Fields {
 		if mdf.Name == titleMetadataFieldName {
-			s := strings.Trim(string(mdf.Value), "\"")
+			var s string
+			err = json.Unmarshal(mdf.Value, &s)
+			if err != nil {
+				log.Printf("ERROR: json.Unmarshal failed (%s)", err.Error())
+				return "", err
+			}
 			err = writeFile(filepath.Join(assetDir, titleFileName), []byte(s))
 			if err != nil {
 				return "", err
@@ -67,7 +72,12 @@ func createBagContents(cfg *ServiceConfig, opts *ServiceOptions, httpClient *htt
 				log.Printf("ERROR: json.Unmarshal failed (%s)", err.Error())
 				return "", err
 			}
-			s := strings.Trim(string(value[0].DV.Value), "\"")
+			var s string
+			err = json.Unmarshal(value[0].DV.Value, &s)
+			if err != nil {
+				log.Printf("ERROR: json.Unmarshal failed (%s)", err.Error())
+				return "", err
+			}
 			err = writeFile(filepath.Join(assetDir, descriptionFileName), []byte(s))
 			if err != nil {
 				return "", err
