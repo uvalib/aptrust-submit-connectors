@@ -56,7 +56,8 @@ type LinkHref struct {
 }
 
 type BundlesResponse struct {
-	EmbeddedBundles Bundles `json:"_embedded"`
+	EmbeddedBundles Bundles             `json:"_embedded"`
+	Links           map[string]LinkHref `json:"_links"`
 }
 
 type Bundles struct {
@@ -69,7 +70,8 @@ type Bundle struct {
 }
 
 type BitstreamsResponse struct {
-	EmbeddedBitstreams Bitstreams `json:"_embedded"`
+	EmbeddedBitstreams Bitstreams          `json:"_embedded"`
+	Links              map[string]LinkHref `json:"_links"`
 }
 
 type Bitstreams struct {
